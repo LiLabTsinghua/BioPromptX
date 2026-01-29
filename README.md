@@ -19,8 +19,10 @@ The BioPromptX method proposed in this paper establishes a comprehensive automat
 
 
 ## 📊 Results
-Benchmark result of gene function and kinetic parameter extraction
+Benchmark result of gene function extraction
 <img width="2244" height="1705" alt="fig2" src="https://github.com/user-attachments/assets/ee25d058-1374-4872-8ef6-e29194387e9e" />
+
+Benchmark result of kinetic parameter extraction
 <img width="1851" height="2307" alt="fig3" src="https://github.com/user-attachments/assets/65836e2d-b658-44d9-abd4-e002b1d4d140" />
 
 
