@@ -42,3 +42,6 @@ pip install -r requirements.txt
 
 ## 📚 Citation
 How to cite this work
+
+## 👍 Contact
+Feiran Li: feiranli@sz.tsinghua.edu.cn
