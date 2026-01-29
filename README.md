@@ -1,1 +1,1 @@
-# CeLLM
+# BioPromptX
