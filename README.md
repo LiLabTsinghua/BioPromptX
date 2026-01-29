@@ -25,34 +25,18 @@ Benchmark result of gene function and kinetic parameter extraction
 
 
 ## 🚀 Installation
-beautifulsoup4==4.14.3
-Bio==1.8.1
-biopython==1.84
-chardet==4.0.0
-graphviz==0.20.3
-langchain==1.2.7
-langchain_openai==1.1.7
-matplotlib==3.7.2
-numpy==2.4.1
-ollama==0.6.1
-openai==2.16.0
-openpyxl==3.0.10
-paddleocr==3.3.2
-paddlepaddle_gpu==3.2.0
-pandas==2.0.3
-pdf2image==1.17.0
-pdfplumber==0.11.4
-Pillow==12.1.0
-rdflib==7.5.0
-Requests==2.32.5
-seaborn==0.13.2
-sentencepiece==0.2.0
-spacy==3.8.4
-tenacity==8.2.2
-tokenizers==0.22.2
-torch==2.8.0
-tqdm==4.65.0
+```txt
+# 1. Clone this repository
+https://github.com/LiLabTsinghua/BioPromptX.git
+cd BioPromptX
 
+# 2. Create and activate a conda environment (recommended)
+conda create -n BioPromptX python=3.11
+conda activate BioPromptX
+
+# 3. Install dependencies
+pip install -r requirements.txt
+```
 
 ## 📚 Citation
 How to cite this work
