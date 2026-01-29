@@ -1,3 +1,28 @@
 # BioPromptX: A Method for Automated Cell Information Extraction Based on Large Language Models
 
-# We present a fully automated large language model (LLM)-based framework for large-scale biological knowledge extraction, targeting gene function annotation and enzyme kinetic parameter mining. The workflow benchmarks multiple open-source LLMs (Llama, GPT, Qwen, and DeepSeek) and achieves high accuracy when validated against UniProt and BRENDA. To improve generality and scalability, we introduce a reinforcement learning–based prompt optimization strategy that automatically adapts prompts for user-defined extraction tasks. Across seven biological extraction tasks, the framework demonstrates robust and improved performance. As a practical application, we expanded gene function annotations for E. coli and S. cerevisiae, adding 520 and 353 previously unannotated genes, respectively. This framework enables continuous, scalable updating of biological knowledge bases and supports data-driven digital cell modeling.
+# 🧬 LLM-based Biological Knowledge Extraction Framework
+
+> Automated gene function annotation and enzyme kinetic parameter mining for digital cell modeling.
+
+## 🔍 Overview
+Brief introduction of the project...
+
+## ✨ Key Features
+- Feature 1
+- Feature 2
+- Feature 3
+
+## 🧠 Methodology
+Short explanation of the workflow...
+
+## 📊 Results
+Summary of benchmark results...
+
+## 🚀 Quick Start
+Installation and basic usage...
+
+## 📁 Project Structure
+Explain key folders...
+
+## 📚 Citation
+How to cite this work
