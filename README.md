@@ -3,7 +3,8 @@
 # 🧬 LLM-based Biological Knowledge Extraction Framework
 
 > Automated gene function annotation and enzyme kinetic parameter mining for digital cell modeling.
-> <img width="1507" height="728" alt="fig1" src="https://github.com/user-attachments/assets/4f5968b8-e2fc-4545-8146-62661aa9c97f" />
+><img width="1388" height="532" alt="fig1" src="https://github.com/user-attachments/assets/0e68f341-e525-4a48-8577-25b547c823f1" />
+ 
 
 
 ## 🔍 Overview
@@ -20,16 +21,16 @@ The BioPromptX method proposed in this paper establishes a comprehensive automat
 
 ## 📊 Results
 Benchmark result of gene function extraction
-<img width="2218" height="1705" alt="fig2" src="https://github.com/user-attachments/assets/03656baa-bfa7-43d8-9b92-502566ba2fa1" />
+<img width="2218" height="1717" alt="fig2" src="https://github.com/user-attachments/assets/9a68f244-fd44-497d-ac3d-096d19361df6" />
 
 Benchmark result of kinetic parameter extraction
-<img width="1815" height="1655" alt="fig3" src="https://github.com/user-attachments/assets/be115454-ee08-4ab2-a284-6c9bc97eb139" />
+<img width="1815" height="1675" alt="fig3" src="https://github.com/user-attachments/assets/cf9cbab3-6871-4f04-8a62-0a8fc198d906" />
 
 Dataset and Benchmark for using reinforcement learning method to generate optimized prompts
-<img width="2001" height="830" alt="fig4" src="https://github.com/user-attachments/assets/1be05371-f41c-485c-9770-c5214d50dc8f" />
+<img width="2001" height="830" alt="fig4" src="https://github.com/user-attachments/assets/2de95042-2e95-4604-a8dd-cfb97b427fcd" />
 
 The workflow and data analysis of generated database
-<img width="2332" height="1055" alt="Fig5" src="https://github.com/user-attachments/assets/1862605f-e8a1-4b0e-a7d3-e1c94fbd9465" />
+<img width="2351" height="1082" alt="Fig5" src="https://github.com/user-attachments/assets/9d25fe55-d536-445d-bc85-89ba89d6ec0e" />
 
 
 ## 🚀 Installation
