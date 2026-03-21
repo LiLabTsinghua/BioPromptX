@@ -6,7 +6,7 @@ from Info_Extration.enzyme_info.qwen_api import qwen_api
 from tqdm import tqdm
 
 
-## 定义新的提取 kinetic 参数的 prompt，确保返回数值和单位
+## Define a new prompt for extracting kinetic parameters, ensuring numerical values and units are returned
 def locate_kinetic_parameter_prompt(text, parameter_value):
     system_prompt = 'You are a helpful assistant.'
     prompt = f"""
@@ -55,7 +55,7 @@ def locate_kinetic_parameter_prompt(text, parameter_value):
     return json_data
 
 
-# 处理 JSON 文件并提取 kcat 相关动能学参数
+# Process JSON file and extract kcat-related kinetic parameters
 def process_json(input_path='nature.json', output_path='output_results.json', temp_path='temp_results.json'):
     with open(input_path, 'r') as file:
         data = json.load(file)
@@ -78,18 +78,18 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Extract only kcat parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'kcat' 参数
+            # Process only 'kcat' parameters
             for param in combined_params:
                 value = param.get('value')
                 substrate_name = param.get('substrate')
                 # clean_substrate_name = param.get('clean substrate')
                 # print(f"substrate: {substrate_name}")
                 if substrate_name:
-                    # 提取底物的全名
+                    # Extract the full name of the substrate
                     result = locate_kinetic_parameter_prompt(paper_text, value)
                     extracted_data.append({
                         "value": value,
@@ -115,7 +115,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
         os.remove(temp_path)
 
 
-# 测试处理函数（如果有需要）
+# Test processing function (if needed)
 def process_json_test(input_path='nature.json', output_path='output_results.json', temp_path='temp_results.json'):
     with open(input_path, 'r') as file:
         data = json.load(file)
@@ -139,7 +139,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
                     results.append({"doi": doi, "parameters": []})
                     continue
 
-                # 只提取 kcat 参数
+                # Extract only kcat parameters
                 combined_params = content.get('Combined Kinetic Parameters', {})
                 extracted_data = []
 
