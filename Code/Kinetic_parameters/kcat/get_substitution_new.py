@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 def locate_enzyme_ec_number(text, parameter_value, strain, enzyme):
     """
-    Extract the EC number for the specified enzyme from the text using the API.
+    Extract the substitution information for the specified enzyme from the text using the API.
     """
     system_prompt = 'You are a helpful assistant.'
     prompt = f"""
@@ -57,6 +57,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     results = []
     start_index = 0
 
+    # Check if a temporary file exists to resume processing from the last saved point
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -67,16 +68,18 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
         for index, content in enumerate(data, start=start_index):
             doi = content.get("doi", "Unknown DOI")
             paper_text = content.get('full paper', '')
+            
+            # Skip if no text is found for the DOI
             if not paper_text.strip():
                 print(f"No text found for DOI {doi}. Skipping.")
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Only extract kcat parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'kcat' 参数
+            # Process only 'kcat' parameters
             for param in combined_params:
                 value = param.get('value')
                 substrate = param.get('substrate&co')
@@ -86,7 +89,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 organism = param.get('organism')
 
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract substitution information
                     result = locate_enzyme_ec_number(paper_text, value, strain, enzyme)
                     extracted_data.append({
                         "value": value,
@@ -113,6 +116,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove the temporary file after successful completion
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
