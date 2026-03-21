@@ -15,11 +15,11 @@ def locate_full_substrate_name_prompt(text, parameter_value, enzyme):
         Km value: {parameter_value}
         Key gene of the enzyme: "{enzyme}"
 
-        Your task is to find the organism corresponding to the enzyme and Km value I provided in the article.
+        Your task is to find the organism corresponding to the enzyme and Km value provided above in the article.
 
         The output must be a JSON object in the following format:
         {{
-            "organism": "corresponding organism",
+            "organism": "corresponding organism"
         }}
         
         If no valid associations are found, output: {{"organism": null}}.
@@ -42,6 +42,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     results = []
     start_index = 0
 
+    # Resume from checkpoint if temporary file exists
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -52,46 +53,58 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
         for index, content in enumerate(data, start=start_index):
             doi = content.get("doi", "Unknown DOI")
             paper_text = content.get('full paper', '')
+
+            # Skip entries with empty full text
             if not paper_text.strip():
                 print(f"No text found for DOI {doi}. Skipping.")
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 Km 参数
+            # Only extract Km parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'Km' 参数
+            # Process only 'Km' entries
             for param in combined_params:
                 value = param.get('value')
                 enzyme = param.get('enzyme')
-                # clean_substrate_name = param.get('clean substrate')
+
                 print(f"enzyme: {enzyme}")
+
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract organism information based on Km and enzyme
                     result = locate_full_substrate_name_prompt(paper_text, value, enzyme)
                     extracted_data.append({
                         "value": value,
                         "substrate&co": param.get('substrate&co'),
                         "substrate full name": param.get('substrate full name'),
                         "organism": result.get('organism'),
-                        "enzyme": param.get('enzyme', None)  # Assuming enzyme info is extracted somewhere else
+                        "enzyme": param.get('enzyme', None)  # Enzyme gene information
                     })
 
-            results.append({"doi": doi, "full paper": paper_text, "parameters": extracted_data})
+            results.append({
+                "doi": doi,
+                "full paper": paper_text,
+                "parameters": extracted_data
+            })
 
-            # Save progress periodically
+            # Save progress after each iteration
             if (index + 1) % 1 == 0:
                 with open(temp_path, 'w') as temp_file:
-                    json.dump({'results': results, 'last_processed_index': index}, temp_file, indent=4)
+                    json.dump({
+                        'results': results,
+                        'last_processed_index': index
+                    }, temp_file, indent=4)
                 print(f"Progress saved at index {index}.")
 
             pbar.update(1)
             sleep(1)
 
+    # Save final results
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove temporary file after completion
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
@@ -103,6 +116,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
     results = []
     start_index = 0
 
+    # Resume from checkpoint if exists
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -113,16 +127,18 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
         for index, content in enumerate(data, start=start_index):
             doi = ""
             paper_text = content.get('full paper', '')
+
+            # Skip entries with empty full text
             if not paper_text.strip():
                 print(f"No text found for DOI {doi}. Skipping.")
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 Km 参数
+            # Only extract Km parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'Km' 参数
+            # Process only 'Km' entries
             for param in combined_params:
                 value = param.get('value')
                 substrate = param.get('substrate')
@@ -130,7 +146,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
                 substrate_full_name = param.get('substrate full name')
 
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract organism information
                     result = locate_full_substrate_name_prompt(paper_text, value, enzyme)
                     extracted_data.append({
                         "value": value,
@@ -139,20 +155,29 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
                         "enzyme": enzyme,
                     })
 
-            results.append({"doi": doi, "full paper": paper_text, "parameters": extracted_data})
+            results.append({
+                "doi": doi,
+                "full paper": paper_text,
+                "parameters": extracted_data
+            })
 
-            # Save progress periodically
+            # Save progress after each iteration
             if (index + 1) % 1 == 0:
                 with open(temp_path, 'w') as temp_file:
-                    json.dump({'results': results, 'last_processed_index': index}, temp_file, indent=4)
+                    json.dump({
+                        'results': results,
+                        'last_processed_index': index
+                    }, temp_file, indent=4)
                 print(f"Progress saved at index {index}.")
 
             pbar.update(1)
             sleep(1)
 
+    # Save final results
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove temporary file after completion
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
@@ -160,4 +185,5 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
 if __name__ == '__main__':
     process_json(
         'Ecoli_kinetic_combined_substrate_fullname_enzyme.json',
-        'Ecoli_kinetic_combined_substrate_fullname_enzyme_organism.json')
+        'Ecoli_kinetic_combined_substrate_fullname_enzyme_organism.json'
+    )
