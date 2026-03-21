@@ -6,8 +6,8 @@ from Info_Extration.enzyme_info.qwen_api import qwen_api
 from tqdm import tqdm
 
 
-# 定义新的 prompt 函数，直接提取 kcat, Km 和 kcat/Km 及其单位
-# 定义新的提取 kinetic 参数的 prompt，确保返回数值和单位
+# Define a new prompt function to directly extract kcat, Km, and kcat/Km along with their units
+# Define a new prompt for extracting kinetic parameters, ensuring numerical values and units are returned
 def locate_kinetic_parameter_prompt(text, parameter_type, parameter_value):
     system_prompt = 'You are a helpful assistant.'
     prompt = f"""
@@ -60,7 +60,7 @@ def locate_kinetic_parameter_prompt(text, parameter_type, parameter_value):
     return json_data
 
 
-# 处理 JSON 文件并提取 Km 相关动能学参数
+# Process JSON file and extract Km-related kinetic parameters
 def process_json(input_path='nature.json', output_path='output_results.json', temp_path='temp_results.json'):
     with open(input_path, 'r') as file:
         data = json.load(file)
@@ -75,7 +75,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
             start_index = temp_data['last_processed_index'] + 1
 
     with tqdm(total=len(data), desc="Processing", unit="paper") as pbar:
-        for index, item in enumerate(data, start=start_index):  # 遍历列表中的每一项
+        for index, item in enumerate(data, start=start_index):  # Iterate through each item in the list
             doi = item.get("doi")
             paper_text = item.get('paper result', '')
             if not paper_text.strip():
@@ -83,7 +83,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 results.append({"doi": doi, "full paper": paper_text, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Extract only kcat parameters
             combined_params = item.get('Kinetic Parameters', {})
             extracted_data = []
 
@@ -113,7 +113,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
         os.remove(temp_path)
 
 
-# 测试处理函数（如果有需要）
+# Test processing function (if needed)
 def process_json_test(input_path='nature.json', output_path='output_results.json', temp_path='temp_results.json'):
     with open(input_path, 'r') as file:
         data = json.load(file)
@@ -128,7 +128,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
             start_index = temp_data['last_processed_index'] + 1
 
     with tqdm(total=len(data), desc="Processing", unit="paper") as pbar:
-        for index, item in enumerate(data, start=start_index):  # 遍历列表中的每一项
+        for index, item in enumerate(data, start=start_index):  # Iterate through each item in the list
             doi = item.get("doi")
             paper_text = item.get('paper result', '')
             if not paper_text.strip():
@@ -136,7 +136,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
                 results.append({"doi": doi, "full paper": paper_text, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Extract only kcat parameters
             combined_params = item.get('Kinetic Parameters', {})
             extracted_data = []
 
