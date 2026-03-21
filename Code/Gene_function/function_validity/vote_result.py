@@ -2,7 +2,7 @@ import pandas as pd
 from collections import Counter
 
 # Read tsv
-df = pd.read_csv('/home/zhetao/Human_gene/Info_Extration/gene_function/Get_Function/split200_gene_function/final_result/carbon_result_gene_DS32_comparison_checked_split_function_result.tsv', sep='\t')
+df = pd.read_csv('carbon_result_gene_DS32_comparison_checked_split_function_result.tsv', sep='\t')
 
 # get last 3 col
 last_three_columns = df.columns[-3:]
