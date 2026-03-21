@@ -1,20 +1,20 @@
 import json
 
-# 输入的JSON文件
-input_file = 'SC_tables_result.json'  # 请替换为实际的文件路径
+# Input JSON file
+input_file = 'SC_tables_result.json'  # Please replace with the actual file path
 output_file = 'SC_tables_result_combined.json'
 
-# 加载输入数据
+# Load input data
 with open(input_file, 'r', encoding='utf-8') as f:
     data = json.load(f)
 
-# 存储最终合并后的数据
+# Store the final merged data
 merged_data = []
 
-# 遍历每个 DOI 相关的数据
+# Iterate through data related to each DOI
 for article in data:
     for doi, tables in article.items():
-        # 创建一个新的条目
+        # Create a new entry
         entry = {
             "doi": doi,
             "Kinetic Parameters": {
@@ -24,27 +24,27 @@ for article in data:
             }
         }
 
-        # 确保tables是字典类型
+        # Ensure tables is a dictionary type
         if isinstance(tables, dict):
-            # 遍历每个表格
+            # Iterate through each table
             for table_id, table_content in tables.items():
-                # 提取表格的标题作为对表格的分类
+                # Extract the table title to classify the table
                 if table_id.endswith("Kinetic Parameters"):
-                    # 这里假设 Kinetic Parameters 数据都以这个方式出现
+                    # Assuming Kinetic Parameters data appears in this format
                     if isinstance(table_content, dict):
                         for param_type in ["kcat", "Km", "kcat/Km"]:
-                            # 对每个 Kinetic Parameters 项目进行合并
+                            # Merge each Kinetic Parameters item
                             if param_type in table_content:
                                 entry["Kinetic Parameters"][param_type].extend(table_content[param_type])
 
-            # 将合并好的条目添加到结果列表
+            # Add the merged entry to the result list
             merged_data.append(entry)
         else:
-            # 如果没有表格，记录该DOI并跳过
+            # If no tables are found, log the DOI and skip
             print(f"No tables found for DOI: {doi}")
 
-# 输出到新文件
+# Output to the new file
 with open(output_file, 'w', encoding='utf-8') as f:
     json.dump(merged_data, f, ensure_ascii=False, indent=4)
 
-print(f"处理完毕，合并后的数据已保存到 {output_file}")
+print(f"Processing complete. Merged data has been saved to {output_file}")
