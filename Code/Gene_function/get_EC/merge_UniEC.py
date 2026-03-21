@@ -1,7 +1,7 @@
 import pandas as pd
 
 # read tsv contain Entry and EC number
-df1 = pd.read_csv('/home/zhetao/Human_gene/Info_Extration/gene_function/Get_Function/split200_gene_function/final_result/amino_acid_result_gene_comparison.tsv', sep='\t')
+df1 = pd.read_csv('amino_acid_result_gene_comparison.tsv', sep='\t')
 
 # read Entry only tsv
 df2 = pd.read_csv('amino_acid_result_gene_comparison_checked_split_function_EC.tsv', sep='\t')
