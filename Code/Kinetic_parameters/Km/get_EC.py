@@ -15,12 +15,14 @@ def locate_enzyme_ec_number(text, enzyme_name):
 
     Article: ''' {text} '''
 
-    The above Article contain an enzyme key gene identified as "{enzyme_name}". Your task is to analyze the text and extract the EC (Enzyme Commission) number associated with the enzyme (if explicitly mentioned).
+    The above article contains an enzyme-associated gene identified as "{enzyme_name}". 
+    Your task is to analyze the text and extract the EC (Enzyme Commission) number 
+    associated with this enzyme (if explicitly mentioned).
 
     Provide the extracted information in the following JSON format:
 
     {{
-        "EC number": "1.1.1.1",
+        "EC number": "1.1.1.1"
     }}
 
     If no EC number is found, return:
@@ -46,6 +48,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     results = []
     start_index = 0
 
+    # Resume from temporary file if it exists
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -56,16 +59,18 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
         for index, content in enumerate(data, start=start_index):
             doi = content.get("doi", "Unknown DOI")
             paper_text = content.get('full paper', '')
+
+            # Skip entries with empty paper text
             if not paper_text.strip():
                 print(f"No text found for DOI {doi}. Skipping.")
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Only extract kcat-related parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'kcat' 参数
+            # Process only entries that contain enzyme information
             for param in combined_params:
                 value = param.get('value')
                 substrate = param.get('substrate&co')
@@ -75,32 +80,41 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 organism = param.get('organism')
 
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract EC number using enzyme name and full text
                     result = locate_enzyme_ec_number(paper_text, enzyme)
                     extracted_data.append({
                         "value": value,
                         "substrate&co": substrate,
                         "substrate full name": substrate_full_name,
-                        "strain name": param.get('strain name'),
+                        "strain name": strain,
                         "organism": organism,
                         "enzyme": enzyme,
                         "EC number": result.get("EC number"),
                     })
 
-            results.append({"doi": doi, "full paper": paper_text, "parameters": extracted_data})
+            results.append({
+                "doi": doi,
+                "full paper": paper_text,
+                "parameters": extracted_data
+            })
 
-            # Save progress periodically
+            # Save progress after each iteration
             if (index + 1) % 1 == 0:
                 with open(temp_path, 'w') as temp_file:
-                    json.dump({'results': results, 'last_processed_index': index}, temp_file, indent=4)
+                    json.dump({
+                        'results': results,
+                        'last_processed_index': index
+                    }, temp_file, indent=4)
                 print(f"Progress saved at index {index}.")
 
             pbar.update(1)
             sleep(1)
 
+    # Save final results
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove temporary file after completion
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
@@ -108,4 +122,5 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
 if __name__ == '__main__':
     process_json(
         'Ecoli_kinetic_combined_substrate_fullname_enzyme_organism_strain.json',
-        'Ecoli_kinetic_combined_substrate_fullname_enzyme_organism_strain_EC.json')
+        'Ecoli_kinetic_combined_substrate_fullname_enzyme_organism_strain_EC.json'
+    )
