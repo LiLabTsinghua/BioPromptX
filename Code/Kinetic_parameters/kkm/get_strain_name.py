@@ -42,6 +42,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     results = []
     start_index = 0
 
+    # Load progress from temporary file if it exists (for resuming interrupted processes)
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -57,18 +58,18 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Extract only kcat parameters (Note: Logic currently iterates all params but implies filtering intent)
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'kcat' 参数
+            # Process parameters (Currently processes all available params where enzyme exists)
             for param in combined_params:
                 value = param.get('value')
                 enzyme = param.get('enzyme')
                 # clean_substrate_name = param.get('clean substrate')
                 print(f"enzyme: {enzyme}")
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract the strain name
                     result = locate_full_substrate_name_prompt(paper_text, value, enzyme)
                     extracted_data.append({
                         "value": value,
@@ -93,6 +94,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove temporary file after successful completion
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
@@ -104,6 +106,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
     results = []
     start_index = 0
 
+    # Load progress from temporary file if it exists (for resuming interrupted processes)
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -119,11 +122,11 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Extract only kcat parameters (Note: Logic currently iterates all params)
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'kcat' 参数
+            # Process parameters (Currently processes all available params where enzyme exists)
             for param in combined_params:
                 value = param.get('value')
                 substrate = param.get('substrate')
@@ -131,7 +134,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
                 substrate_full_name = param.get('substrate full name')
 
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract the strain name
                     result = locate_full_substrate_name_prompt(paper_text, value, enzyme)
                     extracted_data.append({
                         "value": value,
@@ -154,6 +157,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove temporary file after successful completion
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
