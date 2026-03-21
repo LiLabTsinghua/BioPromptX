@@ -7,7 +7,8 @@ from tqdm import tqdm
 
 def locate_enzyme_ec_number(text, parameter_value, strain, enzyme):
     """
-    Extract the EC number for the specified enzyme from the text using the API.
+    Extract the substitution (amino acid modification/mutation) corresponding to the specified enzyme kinetic parameter from the text using the API.
+    Note: The function name suggests EC number extraction, but the logic extracts substitution information.
     """
     system_prompt = 'You are a helpful assistant.'
     prompt = f"""
@@ -55,32 +56,37 @@ def locate_enzyme_ec_number(text, parameter_value, strain, enzyme):
 
 
 def process_json(input_path='nature.json', output_path='output_results.json', temp_path='temp_results.json'):
+    # Load the input JSON file
     with open(input_path, 'r') as file:
         data = json.load(file)
 
     results = []
     start_index = 0
 
+    # Check if a temporary progress file exists to resume processing
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
             results = temp_data['results']
             start_index = temp_data['last_processed_index'] + 1
 
+    # Iterate through the data with a progress bar
     with tqdm(total=len(data), desc="Processing", unit="paper") as pbar:
         for index, content in enumerate(data, start=start_index):
             doi = content.get("doi", "Unknown DOI")
             paper_text = content.get('full paper', '')
+            
+            # Skip if no text is found for the DOI
             if not paper_text.strip():
                 print(f"No text found for DOI {doi}. Skipping.")
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 kcat/Km 参数
+            # Retrieve combined parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'kcat/Km' 参数
+            # Process only 'kcat/Km' related parameters (logic currently processes all if enzyme exists)
             for param in combined_params:
                 value = param.get('value')
                 substrate = param.get('substrate&co')
@@ -90,7 +96,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 organism = param.get('organism')
 
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract the full name of the substrate and corresponding substitution
                     result = locate_enzyme_ec_number(paper_text, value, strain, enzyme)
                     extracted_data.append({
                         "value": value,
@@ -105,7 +111,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
 
             results.append({"doi": doi, "full paper": paper_text, "parameters": extracted_data})
 
-            # Save progress periodically
+            # Save progress periodically (currently saves after every item due to % 1 == 0)
             if (index + 1) % 1 == 0:
                 with open(temp_path, 'w') as temp_file:
                     json.dump({'results': results, 'last_processed_index': index}, temp_file, indent=4)
@@ -114,9 +120,11 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
             pbar.update(1)
             sleep(1)
 
+    # Write the final results to the output file
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove the temporary file if it exists
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
