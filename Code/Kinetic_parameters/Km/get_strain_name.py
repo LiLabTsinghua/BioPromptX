@@ -57,18 +57,18 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Extract only kcat parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'kcat' 参数
+            # Process only 'kcat' parameters
             for param in combined_params:
                 value = param.get('value')
                 enzyme = param.get('enzyme')
                 # clean_substrate_name = param.get('clean substrate')
                 print(f"enzyme: {enzyme}")
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract the full name of the substrate
                     result = locate_full_substrate_name_prompt(paper_text, value, enzyme)
                     extracted_data.append({
                         "value": value,
@@ -119,11 +119,11 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 kcat 参数
+            # Extract only kcat parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'kcat' 参数
+            # Process only 'kcat' parameters
             for param in combined_params:
                 value = param.get('value')
                 substrate = param.get('substrate')
@@ -131,7 +131,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
                 substrate_full_name = param.get('substrate full name')
 
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract the full name of the substrate
                     result = locate_full_substrate_name_prompt(paper_text, value, enzyme)
                     extracted_data.append({
                         "value": value,
