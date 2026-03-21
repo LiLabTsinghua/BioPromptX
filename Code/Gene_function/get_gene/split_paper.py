@@ -2,9 +2,9 @@ import os
 import json
 import re
 
-# 论文切分函数，每段最多 max_words 个单词
+# split paper
 def slice_paper_content(paper_text, max_words=200):
-    sentences = re.split(r'(?<=[.!?]) +', paper_text)  # 按句号、问号、感叹号后空格进行切分
+    sentences = re.split(r'(?<=[.!?]) +', paper_text)  # Split by the space following a period, question mark, or exclamation point
     slices = []
     current_slice = []
     word_count = 0
@@ -13,7 +13,7 @@ def slice_paper_content(paper_text, max_words=200):
         sentence_word_count = len(sentence.split())
 
         if word_count + sentence_word_count > max_words:
-            if current_slice:  # 只有在当前切片非空时才进行切片
+            if current_slice:  
                 slices.append(' '.join(current_slice))
             current_slice = [sentence]
             word_count = sentence_word_count
@@ -27,45 +27,43 @@ def slice_paper_content(paper_text, max_words=200):
     return slices
 
 
-# 读取之前生成的 JSON 文件
-input_json = "carbon_paper.json"  # 你的 JSON 文件路径
+input_json = "carbon_paper.json" 
 output_json = "sliced200_carbon_paper.json"
 
 with open(input_json, "r", encoding="utf-8") as f:
     data = json.load(f)
 
-# 处理 JSON 数据，按照 DOI 组织
+# Processing JSON data organized by DOI
 result = {
     "NER result": []
 }
 
-# 遍历 JSON 中的每篇论文
+# Iterate through each paper in the JSON
 for paper in data:
-    pubmed_id = paper.get("PubMed_ID")  # 获取 PubMed ID
-    paper_content = paper.get("content")  # 获取论文正文
+    pubmed_id = paper.get("PubMed_ID")  # get PubMed ID
+    paper_content = paper.get("content")  # get full paper
 
     if not paper_content:
-        continue  # 跳过空内容
+        continue  
 
-    # 切分论文内容
+    # split content
     sliced_content = []
     slices = slice_paper_content(paper_content)
 
     for slice_text in slices:
         sliced_content.append({"text": slice_text})
 
-    # 组织结果
+    # get result
     result["NER result"].append({
-        "PubMed_ID": pubmed_id,  # 这里用 PubMed ID 代替 DOI
+        "PubMed_ID": pubmed_id,  # PubMed ID <- DOI
         "content": paper_content,
         "paper result": sliced_content
     })
 
-# 保存到新的 JSON 文件
+
 with open(output_json, "w", encoding="utf-8") as f:
     json.dump(result, f, ensure_ascii=False, indent=4)
 
-# 调试信息
 if not result["NER result"]:
     print("⚠️ Warning: No results found. Check the input data.")
 else:
