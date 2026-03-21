@@ -19,20 +19,6 @@ We present a fully automated large language model (LLM)-based framework for larg
 The BioPromptX method proposed in this paper establishes a comprehensive automated information extraction workflow: First, the Miner-U tool parses biomedical literature PDFs into structured Markdown text. Next, through carefully designed prompt templates, open-source large language models (such as GPT and DeepSeek) are invoked to concurrently extract gene functional annotations and enzyme kinetic parameters from the text, with consistency validation scores obtained from authoritative databases (UniProt, BRENDA). To enhance adaptability across tasks, reinforcement learning (DQN) strategies are introduced to iteratively generate and optimize extraction prompts for user-defined tasks. Finally, the workflow is scaled for specific species (e.g., E. coli, yeast), building a complementary and updatable knowledge base of gene functions and kinetic parameters. This is deployed as an online platform enabling users to upload literature, select tasks, and receive automated extraction of structured results.
 
 
-## 📊 Results
-Benchmark result of gene function extraction
-<img width="2218" height="1717" alt="fig2" src="https://github.com/user-attachments/assets/9a68f244-fd44-497d-ac3d-096d19361df6" />
-
-Benchmark result of kinetic parameter extraction
-<img width="1815" height="1675" alt="fig3" src="https://github.com/user-attachments/assets/cf9cbab3-6871-4f04-8a62-0a8fc198d906" />
-
-Dataset and Benchmark for using reinforcement learning method to generate optimized prompts
-<img width="2001" height="830" alt="fig4" src="https://github.com/user-attachments/assets/2de95042-2e95-4604-a8dd-cfb97b427fcd" />
-
-The workflow and data analysis of generated database
-<img width="2351" height="1082" alt="Fig5" src="https://github.com/user-attachments/assets/9d25fe55-d536-445d-bc85-89ba89d6ec0e" />
-
-
 ## 🚀 Installation
 ```txt
 # 1. Clone this repository
