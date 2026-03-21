@@ -6,7 +6,8 @@ from Info_Extration.enzyme_info.qwen_api import qwen_api
 from tqdm import tqdm
 
 
-## 定义新的提取 kinetic 参数的 prompt，确保返回数值和单位
+# Define a new prompt for extracting kinetic parameters (Km),
+# ensuring both substrate and enzyme are returned
 def locate_kinetic_parameter_prompt(text, parameter_value):
     system_prompt = 'You are a helpful assistant.'
     prompt = f"""
@@ -43,7 +44,6 @@ def locate_kinetic_parameter_prompt(text, parameter_value):
         Please ensure that all results must be mentioned in the article.
         If no valid associations are found, output: {{"substrate": null, "enzyme": null}}.
     """
-    # print(prompt)
     result = qwen_api(user_message=prompt, top_p=0.6, system_message=system_prompt)
 
     try:
@@ -55,7 +55,7 @@ def locate_kinetic_parameter_prompt(text, parameter_value):
     return json_data
 
 
-# 处理 JSON 文件并提取 Km 相关动能学参数
+# Process JSON file and extract Km-related kinetic parameters
 def process_json(input_path='nature.json', output_path='output_results.json', temp_path='temp_results.json'):
     with open(input_path, 'r') as file:
         data = json.load(file)
@@ -63,6 +63,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     results = []
     start_index = 0
 
+    # Resume from checkpoint if temporary file exists
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -73,49 +74,59 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
         for index, content in enumerate(data, start=start_index):
             doi = content.get("doi", "Unknown DOI")
             paper_text = content.get('full paper', '')
+
+            # Skip entries with empty full text
             if not paper_text.strip():
                 print(f"No text found for DOI {doi}. Skipping.")
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 Km 参数
+            # Only extract Km parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'Km' 参数
+            # Process only 'Km' entries
             for param in combined_params:
                 value = param.get('value')
                 substrate_name = param.get('substrate')
-                # clean_substrate_name = param.get('clean substrate')
-                # print(f"substrate: {substrate_name}")
+
                 if substrate_name:
-                    # 提取底物的全名
+                    # Extract substrate-enzyme association from text
                     result = locate_kinetic_parameter_prompt(paper_text, value)
                     extracted_data.append({
                         "value": value,
                         "substrate&co": substrate_name,
-                        "enzyme": result.get('enzyme', None)  # Assuming enzyme info is extracted somewhere else
+                        "enzyme": result.get('enzyme', None)  # Extracted enzyme gene
                     })
 
-            results.append({"doi": doi, "full paper": paper_text, "parameters": extracted_data})
+            results.append({
+                "doi": doi,
+                "full paper": paper_text,
+                "parameters": extracted_data
+            })
 
-            # Save progress periodically
+            # Save progress after each iteration
             if (index + 1) % 1 == 0:
                 with open(temp_path, 'w') as temp_file:
-                    json.dump({'results': results, 'last_processed_index': index}, temp_file, indent=4)
+                    json.dump({
+                        'results': results,
+                        'last_processed_index': index
+                    }, temp_file, indent=4)
                 print(f"Progress saved at index {index}.")
 
             pbar.update(1)
             sleep(1)
 
+    # Save final results
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove temporary file after completion
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
 
-# 测试处理函数（如果有需要）
+# Test function for processing a specific DOI (optional)
 def process_json_test(input_path='nature.json', output_path='output_results.json', temp_path='temp_results.json'):
     with open(input_path, 'r') as file:
         data = json.load(file)
@@ -123,6 +134,7 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
     results = []
     start_index = 0
 
+    # Resume from checkpoint if exists
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -131,15 +143,19 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
 
     with tqdm(total=len(data), desc="Processing", unit="paper") as pbar:
         for index, (doi, content) in enumerate(data.items(), start=start_index):
+
+            # Only test a specific DOI
             if doi == "10.1038_srep16520":
 
                 paper_text = content.get('full paper', '')
+
+                # Skip if no text is available
                 if not paper_text.strip():
                     print(f"No text found for DOI {doi}. Skipping.")
                     results.append({"doi": doi, "parameters": []})
                     continue
 
-                # 只提取 Km 参数
+                # Extract Km parameters only
                 combined_params = content.get('Combined Kinetic Parameters', {})
                 extracted_data = []
 
@@ -155,15 +171,20 @@ def process_json_test(input_path='nature.json', output_path='output_results.json
 
                 results.append({"doi": doi, "parameters": extracted_data})
 
-                # Save progress periodically
+                # Save progress
                 if (index + 1) % 1 == 0:
                     with open(temp_path, 'w') as temp_file:
-                        json.dump({'results': results, 'last_processed_index': index}, temp_file, indent=4)
+                        json.dump({
+                            'results': results,
+                            'last_processed_index': index
+                        }, temp_file, indent=4)
                     print(f"Progress saved at index {index}.")
 
                 pbar.update(1)
 
 
 if __name__ == '__main__':
-    process_json('Ecoli_kinetic_combined_substrate.json', "Ecoli_kinetic_combined_substrate_enzyme.json")
-    # process_json_test('/home/zhetao/Human_gene/Info_Extration/enzyme_info/process_data/md+table_process/full_paper+md+tables_kinetic.json','/home/zhetao/Human_gene/Info_Extration/enzyme_info/process_data/md+table_process/full_paper+md+tables_kinetic_result.json')
+    process_json(
+        'Ecoli_kinetic_combined_substrate.json',
+        "Ecoli_kinetic_combined_substrate_enzyme.json"
+    )
