@@ -61,6 +61,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     results = []
     start_index = 0
 
+    # Load progress from temp file if it exists
     if os.path.exists(temp_path):
         with open(temp_path, 'r') as temp_file:
             temp_data = json.load(temp_file)
@@ -76,11 +77,11 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 results.append({"doi": doi, "parameters": []})
                 continue
 
-            # 只提取 Km 参数
+            # Extract only Km parameters
             combined_params = content.get('parameters', [])
             extracted_data = []
 
-            # 只处理 'Km' 参数
+            # Process only 'Km' parameters
             for param in combined_params:
                 value = param.get('value')
                 substrate = param.get('substrate&co')
@@ -90,7 +91,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
                 organism = param.get('organism')
 
                 if enzyme:
-                    # 提取底物的全名
+                    # Extract the full name of the substrate (Note: Function name says EC number but logic extracts substitution)
                     result = locate_enzyme_ec_number(paper_text, value, strain, enzyme)
                     extracted_data.append({
                         "value": value,
@@ -117,6 +118,7 @@ def process_json(input_path='nature.json', output_path='output_results.json', te
     with open(output_path, 'w') as outfile:
         json.dump(results, outfile, indent=4)
 
+    # Remove temp file after successful completion
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
