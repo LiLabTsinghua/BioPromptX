@@ -5,10 +5,10 @@ import re
 # ================= 配置区域 =================
 # 1. 指向你存放所有论文文件夹的根目录（绝对路径）
 # 例如: "/home/zhetao/Human_gene/Info_Extration/gene_function/Get_Function/database/kinetic_parameter/md+figs/pdfs"
-BASE_DIR = r"/home/zhetao/Human_gene/Info_Extration/gene_function/Get_Function/database/kinetic_parameter/md+figs/pdfs"
+BASE_DIR = r"/home/zhetao/Human_gene/Info_Extration/gene_function/Get_Function/database/kinetic_parameter/KP_pdfs+figs"
 
 # 2. 你的 JSON 文件路径
-JSON_PATH = '/home/zhetao/Human_gene/Info_Extration/gene_function/Get_Function/database/kinetic_parameter/all_detected_tables.json'
+JSON_PATH = '/home/zhetao/Human_gene/Info_Extration/gene_function/Get_Function/database/kinetic_parameter/all_detected_tables_KP.json'
 
 
 # ===========================================
